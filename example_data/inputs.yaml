@@ -1,0 +1,10 @@
+---
+output: '../example_outputs/'
+XY: '../example_data/XY.csv'
+G: '../example_data/genotypes/'
+Z: '../example_data/annotations/'
+epochs: 300
+n_samples: 50
+test_prop: 0.2
+lr: 0.1
+genes: '../example_data/joint_analysis_genes.txt'
