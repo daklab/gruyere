@@ -29,6 +29,15 @@ pip install -r requirements.txt OR conda create --name gruyere --file requiremen
 - `train_performance.csv`: AUC and accuracy of predictions by gene on training set
 - `test_performance.csv`: AUC and accuracy of predictions by gene on held-out test set (optional; if using test set)
 
+**Model Outputs (Joint analysis)**
+- `alpha.csv`: Learned covariate weights 
+- `wg.csv`: Learned gene weights
+- `train_performance.csv`: AUC and accuracy of predictions by gene on training set
+- `test_performance.csv`: AUC and accuracy of predictions by gene on held-out test set (optional; if using test set)
+
+**Model Outputs (Per-gene analysis)**
+- `pvals_chr{chromosome}.csv`: gene p-values and coefficients for all genes in chromosome
+- `preds_chr{chromosome}.csv`: individual-level predictions for all genes in chromosome
 
 
 ## Example:
@@ -44,12 +53,12 @@ epochs: 300
 n_samples: 50 # Number of times to sample the posterior to determine mean/standard deviation estimates
 test_prop: 0.2 # Test set proportion
 lr: 0.1
-genes: '../example_data/joint_analysis_genes.txt' # List of genes to perform joint analysis on (we use FST)
+genes: '../example_data/joint_analysis_genes.txt' # List of genes to perform joint analysis on (we use FST-significant genes)
 simulate: False 
 ```
 
 **Scripts**
-- `models.py`: contains model classes for joint and per-gene gruyere training
+- `models.py`: contains gruyere model class
 - `data_class`: processes input data and stores as dataclass object
 - `load_data`: functions to load input data
 - `utils.py`: utility functions
@@ -57,6 +66,7 @@ simulate: False
 - `gruyere_joint.py`: fits joint gruyere model
 - `gruyere_pergene.py`: fits per-gene gruyere regression
 
+**Bash scripts to run gruyere**
 ``` r
 sbatch example_bash/joint_analysis.sh
 sbatch example_bash/per_gene.sh
