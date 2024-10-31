@@ -9,15 +9,7 @@ import torch
 
 def predict_pergene(data, params, posterior_stats, group):
     performance = {}
-    num_indivs = data.G[group].shape[0]
-    w_g = torch.tensor(posterior_stats['w_g']['mean'], dtype = torch.float32)
-    alpha = torch.tensor(posterior_stats['alpha']['mean'], dtype = torch.float32)
-    beta = ((data.Z.T * data.maf_weights).T.matmul(data.tau)) * w_g
-    Gbeta = (data.G[group]).matmul(beta) 
-    preds = torch.sigmoid(torch.matmul(data.X[group], alpha).reshape(-1,1) + Gbeta.reshape(-1,1)).view(num_indivs) 
-    fpr, tpr, thresholds = roc_curve(np.array(data.Y[group]), preds.detach().numpy())
-    performance['AUC'] = auc(fpr, tpr)
-    performance['ACC'] = ((preds > 0.5).float().detach().numpy() == np.array(data.Y[group])).sum() / len(preds)
+    # To do: Add per-gene predictions
     return performance
     
 

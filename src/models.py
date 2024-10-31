@@ -4,7 +4,7 @@ from pyro.nn import PyroSample, PyroModule
 import torch
 
 
-class gruyere_joint(PyroModule):
+class gruyere(PyroModule):
     def __init__(self):
         super().__init__()
     

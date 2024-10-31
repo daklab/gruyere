@@ -55,4 +55,35 @@ def load_genes(params, genes):
         return None
     return Gs, Zs
 
+def load_genes_chromosome(params, chromosome):
+    '''
+    Loads genotype and functional annotation matrices for genes in a chromosome
+    INPUT: 
+        - params: input yaml file loaded as a params dictionary
+        - genes: dictionary of {chr: [gene1, gene2,...]} to be tested
+    OUTPUT:
+        - Zs: functional annotation dataframe [variants x annotations] with gene mapping included
+        - Gs: genotype dataframe [individuals x variants] with matched order of variants to Zs
+    '''
+    Gs = pd.read_csv(os.path.join(params['G'], 'chr'+ str(chromosome) + '.csv'), index_col = 0)
+    Zs = pd.read_csv(os.path.join(params['Z'], 'chr'+ str(chromosome) + '.csv'), index_col = 0)
+    Gs = Gs.T
+    Zs = Zs.fillna(0)
+    if ("Intercept" not in Zs.columns) or ("intercept" not in Zs.columns):
+        Zs['intercept'] = 1
+    Zs['TargetGene'] = Zs.index.str.split("_").str[0]
+    Zs.set_index('TargetGene', append=True, inplace=True)
+    if Gs.shape[1] != Zs.shape[0]: 
+        print("Error loading genes. Dimensions of genotype and annotation variants do not match.")
+        return None
+    return Gs, Zs
 
+
+
+def load_tau(params):
+    try:
+        tau = torch.tensor(pd.read_csv(os.path.join(os.path.join(params['output'],'joint_model','tau.csv')), index_col = 0)['mean'], dtype = torch.float32)
+        return tau
+    except:
+        print("Issue loading tau. Please make sure you have trained joint model first.")
+        return None

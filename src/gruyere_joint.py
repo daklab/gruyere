@@ -30,8 +30,8 @@ def fit(data, params):
     Fit gruyere model jointly
     '''
     if params['simulate']:
-        data = models.gruyere_joint().forward(data, params, simulate = True)
-    model = models.gruyere_joint()
+        data = models.gruyere().forward(data, params, simulate = True)
+    model = models.gruyere()
     guide = AutoGuideList(model)
     to_optimize = [] # can have "tau" here if want point estimates (Delta guide)
     guide.add(AutoNormal(poutine.block(model, hide = to_optimize)))
@@ -57,6 +57,9 @@ def fit(data, params):
     return posterior_stats, losses
 
 def write_outputs(posterior_stats, losses, params, data, annotations, covariates, train_perf, test_perf):  
+    if not os.path.exists(params['output']):
+        os.mkdir(params['output'])
+    params['output'] = os.path.join(params['output'], 'joint_model')
     if not os.path.exists(params['output']):
         os.mkdir(params['output'])
     np.savetxt(os.path.join(params['output'], "losses.txt"), losses)
