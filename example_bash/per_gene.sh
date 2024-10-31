@@ -10,11 +10,11 @@
 #load required modules
 conda activate gruyere
 
-params=("../example_data/inputs.yaml")
+params=("example_data/inputs.yaml")
 cell_index=$((SLURM_ARRAY_TASK_ID % ${#params[@]}))
 params=${params[$cell_index]}
 chr=$((SLURM_ARRAY_TASK_ID / ${#params[@]} + 1))
 echo $chr
 echo $params
 
-python ../src/gruyere_pergene.py $params $chr
+python src/gruyere_pergene.py $params $chr
