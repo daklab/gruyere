@@ -5,7 +5,7 @@
 #SBATCH --mem=15G
 #SBATCH -t 0-10:00 # Runtime in D-HH:MM
 #SBATCH -J gruyere_pergene # <-- name of job
-#SBATCH --array=0-109 # <-- number of jobs to run (one per chromosome, run 5x each)
+#SBATCH --array=0-21 # <-- number of jobs to run (one per chromosome)
 
 #load required modules
 conda activate gruyere
