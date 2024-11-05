@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 RANDOM_STATE = 42
     
 @dataclass
-class GenomeWideAD: 
+class GenomeWideAD: # to do: not AD specific
     G: dict
     Zs: torch.Tensor
     X: dict

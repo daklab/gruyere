@@ -66,9 +66,9 @@ simulate: False
 - `gruyere_joint.py`: fits joint gruyere model
 - `gruyere_pergene.py`: fits per-gene gruyere regression
 
-**Bash scripts to run gruyere**
+**Run gruyere**
 ``` r
-sbatch example_bash/joint_analysis.sh
-sbatch example_bash/per_gene.sh
+python src/gruyere_joint.py example_data/inputs.yaml
+python src/gruyere_pergene.py example_data/inputs.yaml $CHR # For each chromosome
 ```
 
