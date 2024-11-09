@@ -29,12 +29,6 @@ pip install -r requirements.txt OR conda create --name gruyere --file requiremen
 - `train_performance.csv`: AUC and accuracy of predictions by gene on training set
 - `test_performance.csv`: AUC and accuracy of predictions by gene on held-out test set (optional; if using test set)
 
-**Model Outputs (Joint analysis)**
-- `alpha.csv`: Learned covariate weights 
-- `wg.csv`: Learned gene weights
-- `train_performance.csv`: AUC and accuracy of predictions by gene on training set
-- `test_performance.csv`: AUC and accuracy of predictions by gene on held-out test set (optional; if using test set)
-
 **Model Outputs (Per-gene analysis)**
 - `pvals_chr{chromosome}.csv`: gene p-values and coefficients for all genes in chromosome
 - `preds_chr{chromosome}.csv`: individual-level predictions for all genes in chromosome
