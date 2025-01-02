@@ -11,7 +11,6 @@ warnings.filterwarnings('ignore')
 
 variant_type = sys.argv[1]  # "coding" or "noncoding"
 chromosome = int(sys.argv[2])
-output_dir = sys.argv[3]
 
 VARIANTS_EXTRACT = f"/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/genotypes/to_extract/{variant_type}/ADSP.chr{chromosome}.txt"
 ANNOTATION_FILE_PATH = f"/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/ADSP_vcf/36K_QC/WGSA_annotations/ADSP_annotated_chr{chromosome}.annotated.snp.gz"
