@@ -83,8 +83,8 @@ def load_gene(gene, CHRO_NB, params):
     anno = pd.read_csv(os.path.join(params['gene_matrices'], params['cell'],'chr'+ str(CHRO_NB), gene + "_anno_nmf.csv" ))
     anno2 = pd.read_feather(os.path.join(params['gene_matrices'],params['cell'],'chr'+str(CHRO_NB), gene + "_anno.binary")).reset_index()
     anno['splice'] = list(anno2[['SpliceAI_DS_DG', 'SpliceAI_DS_DL', 'SpliceAI_DS_AG', 'SpliceAI_DS_AL']].max(axis = 1)) # Don't use NMF for splicing
-    if params['cell'] == "coding":
-        anno = anno.drop(['roadmap','enhancer'], axis = 1)
+    #if params['cell'] == "coding":
+    #    anno = anno.drop(['roadmap','enhancer'], axis = 1)
     if geno.shape[1] != anno.shape[0]: # problem with gene input
         return None
     else:
