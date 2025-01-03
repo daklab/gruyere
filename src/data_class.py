@@ -9,38 +9,31 @@ from sklearn.model_selection import train_test_split
 RANDOM_STATE = 42
     
 @dataclass
-class GenomeWideAD: 
+class GenomeWideAD: # to do: not AD specific
     G: dict
     Zs: torch.Tensor
     X: dict
-    var2gene: pd.DataFrame
     gene_indices: torch.Tensor
     genes: pd.Index
-    var_indices: torch.Tensor
-    variants: pd.Index
-    AD_status: dict
+    Y: dict
     maf_weights: torch.Tensor
     device: torch.device
     num_genes: int = 0
-    num_vars: int = 0
     num_anno: int = 0
     num_cov: int = 0
     
     def __post_init__(self):
         self.num_genes = max(self.gene_indices) + 1
-        self.num_vars = max(self.var_indices) + 1
         self.num_anno = self.Zs.shape[1]
         self.num_cov = self.X['train'].shape[1]
         
     @staticmethod
     def from_pandas(Gs, Zs, X, Y, params, device = "cpu"): 
         gene_indices, genes = pd.factorize(Zs.index.get_level_values("TargetGene"))
-        var_indices, variants = pd.factorize(Gs.columns)
-        var2gene = pd.DataFrame({'var_indices': var_indices, 'gene_indices': gene_indices})
         if params['test_prop'] == 0: # If no train test split
             X = {'train': torch.tensor(np.array(X),dtype = torch.float, device = device), 'test': None}
             G = {'train': torch.tensor(np.array(Gs),dtype = torch.float, device = device), 'test': None}
-            AD_status = {'train': torch.tensor(np.array(Y),dtype = torch.float, device = device), 'test': None}
+            Y = {'train': torch.tensor(np.array(Y),dtype = torch.float, device = device), 'test': None}
         else:
             X_train, X_test = train_test_split(X, test_size = params['test_prop'], random_state=RANDOM_STATE)
             G_train, G_test = train_test_split(Gs, test_size = params['test_prop'], random_state=RANDOM_STATE)
@@ -53,19 +46,16 @@ class GenomeWideAD:
             Y_test = torch.tensor(np.array(Y_test),dtype = torch.float, device = device)
             G = {'train': G_train, 'test': G_test}
             X = {'train': X_train, 'test': X_test}
-            AD_status = {'train': Y_train, 'test': Y_test}
+            Y = {'train': Y_train, 'test': Y_test}
         
         return GenomeWideAD(
-            var_indices = torch.tensor(var_indices, dtype = torch.long, device = device),
             gene_indices = torch.tensor(gene_indices, dtype = torch.long, device = device), 
-            variants = variants, 
             genes = genes,
             Zs = torch.tensor(np.array(Zs), dtype = torch.float, device = device),
-            maf_weights = utils.get_weights(params['maf_weights'], Gs, Zs), 
-            var2gene = pd.DataFrame(var2gene),
+            maf_weights = utils.get_weights(Gs), 
             G = G,
             X = X,
-            AD_status = AD_status,
+            Y = Y,
             device = device 
         )
     
@@ -75,11 +65,10 @@ class PerGeneAD:
     G: dict
     Z: torch.Tensor
     X: dict
-    AD_status: dict
+    Y: dict
     maf_weights: torch.Tensor
     device: torch.device
     num_genes: int = 0
-    num_vars: int = 0
     num_anno: int = 0
     num_cov: int = 0
     
@@ -93,7 +82,7 @@ class PerGeneAD:
         if params['test_prop'] == 0: # If no train test split
             X = {'train': torch.tensor(np.array(X),dtype = torch.float, device = device), 'test': None}
             G = {'train': torch.tensor(np.array(Gs),dtype = torch.float, device = device), 'test': None}
-            AD_status = {'train': torch.tensor(np.array(Y),dtype = torch.float, device = device), 'test': None}
+            Y = {'train': torch.tensor(np.array(Y),dtype = torch.float, device = device), 'test': None}
         else:
             X_train, X_test = train_test_split(X, test_size = params['test_prop'], random_state=RANDOM_STATE)
             G_train, G_test = train_test_split(Gs, test_size = params['test_prop'], random_state=RANDOM_STATE)
@@ -106,13 +95,15 @@ class PerGeneAD:
             Y_test = torch.tensor(np.array(Y_test),dtype = torch.float, device = device)
             G = {'train': G_train, 'test': G_test}
             X = {'train': X_train, 'test': X_test}
-            AD_status = {'train': Y_train, 'test': Y_test}
+            Y = {'train': Y_train, 'test': Y_test}
         
         return PerGeneAD(
             Z = torch.tensor(np.array(Z), dtype = torch.float, device = device),
-            maf_weights = utils.get_weights(params['maf_weights'], Gs, Z), 
+            maf_weights = utils.get_weights(Gs), 
             G = G,
             X = X,
-            AD_status = AD_status,
+            Y = Y,
             device = device 
         )
+    
+   
