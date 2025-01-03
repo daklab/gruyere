@@ -1,19 +1,19 @@
 ---
-output: "parmigiano_oligodendrocyte"
+output: "coding_MAF01"
 simulate: False
 model: "parmigiano_pergene" # Can be parmigiano_pergene, Burden, SKAT 
 burden_prior: False
 
-jointly_trained_model: "/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/parmigiano/true/joint_burden_OLIG2_enformer" # or path to a jointly trained model 
+jointly_trained_model: "/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/gruyere/true/joint_burden_coding" # or path to a jointly trained model 
 epochs: 300
 n_samples: 50
 test_prop: 0.001
-cell: 'OLIG2' # must be coding, OLIG2, LHX2, NEUN, or peripheralPU1nuclei
-enformer_preds: True ### MAKE THIS TRUE FOR ALL CELL TYPES
-enformer_path: '/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/gene_matrices_maf/ADSP_rare_variants_enformer_delta_scores_annotations_oligodendrocyte.tsv.gz'
+cell: 'coding' # must be coding, OLIG2, LHX2, NEUN, or peripheralPU1nuclei
+enformer_preds: False ### MAKE THIS TRUE FOR ALL CELL TYPES
+enformer_path: '/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/gene_matrices_maf/ADSP_rare_variants_enformer_delta_scores_annotations_microglia.tsv.gz'
 lof_preds: False
 burden_model: "/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/parmigiano/true/pergene_burden_coding_updated"
-
+MAF: 0.001
 
 # fixed parameters
 output_path: '/gpfs/commons/home/adas/parmigiano/outputs/'

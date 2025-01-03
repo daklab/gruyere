@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os, sys
 import torch
+<<<<<<< HEAD
 import statsmodels
 import pyro
 import pyro.distributions as dist
@@ -31,20 +32,37 @@ def impute(G, type_, device = "cpu"):
 
 
 def get_weights(maf_weights, G, Z):
+=======
+from tqdm import tqdm
+import pyro.distributions as dist
+
+
+
+def scale(df):
+    # function that min-max scales a dataframe 
+    return (df-df.min())/ (df.max() - df.min())
+
+def get_weights(G):
+>>>>>>> 3b64698c751033ced518527e22663b311a1c4f33
     '''
     Set variant weights based on MAF and from Beta(1,25) distribution
     This should be run before imputation     
     '''
     d = dist.Beta(1,25)
+<<<<<<< HEAD
     if maf_weights == 'observed':
         maf = torch.tensor(G.mean(0)/2, dtype = torch.float)
     else: # if maf_weights == 'gnomad'
         maf = np.exp(-(np.array((Z['gnomAD_genomes_POPMAX_AF'])*(23.718 - 0.6931) + 0.6931)))# reverse the 0-1 and log normalization
         maf = torch.tensor(maf, dtype = torch.float) 
+=======
+    maf = torch.tensor(G.mean(0)/2, dtype = torch.float) 
+>>>>>>> 3b64698c751033ced518527e22663b311a1c4f33
     maf[maf>0.5] = 1 - maf[maf>0.5] # this shouldn't change anything, just checking that AF is the correct direction
     maf[maf>0.05] = 0.05 # in case of any leaks
     weights = torch.exp(d.log_prob(maf)) 
     return weights
+<<<<<<< HEAD
 
 def load_skat_raw(path, cell, type_test, threshold):
     skat_df = pd.DataFrame()
@@ -150,3 +168,5 @@ def convert_distributions(variable, distribution, counts, data):
             return dist.Uniform(distribution[variable][1], distribution[variable][2])
     return "Distribution not found"
 
+=======
+>>>>>>> 3b64698c751033ced518527e22663b311a1c4f33

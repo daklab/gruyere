@@ -27,6 +27,7 @@ import data_class
 from dataclasses import fields
 import load_data
 import models
+import performance_metrics
 from sklearn.linear_model import LogisticRegression
 
 
@@ -35,6 +36,10 @@ params_file = sys.argv[1]
 with open(params_file, 'r') as stream:
     params = yaml.safe_load(stream)  
 CHRO_NB = int(sys.argv[2])
+try:
+    iteration = int(sys.argv[3])
+except IndexError:
+    iteration = False
 params['genes'] = CHRO_NB
 ##########################
 
@@ -57,11 +62,17 @@ def fit(data, params):
     samples = predictive(data, params)
     posterior_stats = {k:{'mean':np.array(torch.mean(v, 0)[0]),
                          'std': np.array(torch.std(v,0)[0])} for k,v in samples.items() if "obs" not in k}
+    train_perf = performance_metrics.predict_pergene(data, params, posterior_stats, 'train')
+    test_perf = performance_metrics.predict_pergene(data, params, posterior_stats, 'test')
     results = {}
+    alpha = {}
     for variable in posterior_stats:
         if variable in ['w_g', 'w2g', 'rho']:
             results[variable] = float(posterior_stats[variable]['mean'])
             results[variable + "_std"] = float(posterior_stats[variable]['std'])
+        if variable == "alpha":
+            alpha['learned_alpha'] = np.array(posterior_stats[variable]['mean'])
+            alpha['alpha_std'] = np.array(posterior_stats[variable]['std'])
     if params['simulate']:
         fields_list = list(data.__dict__.keys())
         for var in fields_list:
@@ -69,7 +80,10 @@ def fit(data, params):
                 results['true_' + var] = float(getattr(data, var))
             if var == 'Z_norm':
                 results['Z_R'] = np.corrcoef(data.Z_norm, posterior_stats['Z']['mean'])[0,1]
-    return results
+            if var == "alpha":
+                results['alpha_R'] = np.corrcoef(data.alpha, posterior_stats['alpha']['mean'])[0,1]
+                alpha['true_alpha'] = np.array(data.alpha)
+    return results, pd.DataFrame(alpha), train_perf, test_perf
 
 def main():
     if params['simulate']: 
@@ -78,6 +92,10 @@ def main():
         params['output_path'] = os.path.join(params['output_path'], 'true', params['output'])
     if not os.path.exists(params['output_path']):
         os.mkdir(params['output_path'])
+    if iteration:
+        params['output_path'] = os.path.join(params['output_path'], str(iteration))
+        if not os.path.exists(params['output_path']):
+            os.mkdir(params['output_path'])
     params['test_prop'] = 0.001
     if (params['enformer_preds']) & (params['cell'] != "coding"):
         enformer = pd.read_csv(params['enformer_path'], sep = "\t")
@@ -85,9 +103,12 @@ def main():
         enformer[delta_columns] = enformer[delta_columns].abs()
     if params['burden_prior']:
         burden_priors = pd.read_csv(os.path.join(params['burden_model'], f'chr{str(CHRO_NB)}.csv'), index_col = 0)
+        burden_priors = burden_priors.dropna()
     tau, _, _ = load_data.load_model(params['jointly_trained_model']) # pre-trained parameters
     X, Y, genes, skip = load_data.read_data(params)
     stats = {}
+    alpha = pd.DataFrame()
+    performance = {}
     i = 0
     for GENE in tqdm(genes[CHRO_NB]):
         try:
@@ -107,16 +128,28 @@ def main():
                 Zs[column] = (Zs[column] - min_val) / (max_val - min_val)
         Zs['intercept'] = 1 
         Zs = Zs.fillna(0) 
+        if params['MAF'] < 0.05:
+            Zs = Zs.iloc[np.where(Gs.mean(0)/2 < params['MAF'])[0]]
+            Gs = Gs[Gs.columns[np.where(Gs.mean(0)/2 < params['MAF'])[0]]]
         data = data_class.PerGeneAD.from_pandas(Gs, Zs, X, Y, params)
-        if params['burden_prior']: 
-            data.wg_prior = torch.tensor(burden_priors.loc[GENE, 'coef'], dtype = torch.float32)
+        if (params['burden_prior']):
+            if (GENE in burden_priors.index): 
+                data.wg_prior = torch.tensor(burden_priors.loc[GENE, 'coef'], dtype = torch.float32)
+                print(GENE, data.wg_prior)
         else:
             data.wg_prior = 0.0
         data.tau = tau
-        stats[GENE] = fit(data, params)
+        stats[GENE], a, train_perf, test_perf = fit(data, params)
+        performance[GENE] = {'train': train_perf, 'test': test_perf}
+        #a['Gene'] = GENE
+        #alpha = pd.concat((alpha, a))
         if i % 30 == 0:
             df = pd.DataFrame(stats).T
             df.to_csv(os.path.join(params['output_path'], 'chr' + str(CHRO_NB) + '.csv'))
+            #alpha.to_csv(os.path.join(params['output_path'], 'chr'+str(CHRO_NB) + '_alpha.csv'))
+            performance_path = os.path.join(params['output_path'], 'chr' + str(CHRO_NB) + '.pkl')
+            with open(performance_path, 'wb') as f:
+                pickle.dump(performance, f)
         i += 1
     df = pd.DataFrame(stats).T
     df.to_csv(os.path.join(params['output_path'], 'chr' + str(CHRO_NB) + '.csv'))

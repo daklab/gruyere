@@ -1,17 +1,17 @@
 ---
-output: "parmigiano_full_coding"
+output: "separate_tau_psi"
 simulate: False
 permute_anno: False
-model: "parmigiano" 
+model: "parmigiano_separated" 
 burden_prior: False
 
 burden_model: "/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/parmigiano/true/pergene_burden_coding_updated"
 epochs: 300
 n_samples: 50
 test_prop: 0.2
-cell: 'coding' # must be coding, OLIG2, LHX2, NEUN, or peripheralPU1nuclei
-enformer_preds: False ### MAKE THIS TRUE FOR ALL CELL TYPES
-enformer_path: '/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/gene_matrices_maf/ADSP_rare_variants_enformer_delta_scores_annotations_neuron.tsv.gz'
+cell: 'peripheralPU1nuclei' # must be coding, OLIG2, LHX2, NEUN, or peripheralPU1nuclei
+enformer_preds: True ### MAKE THIS TRUE FOR ALL CELL TYPES
+enformer_path: '/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/gene_matrices_maf/ADSP_rare_variants_enformer_delta_scores_annotations_microglia.tsv.gz'
 lof_preds: False
 
 
