@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-# parmigiano: Probabilistic Analysis of Rare variants Modeled In Genome-wIde ANnotation-informed Overdispersion test
 
-We develop a Bayesian hierarchical genome-wide rare variant association test with parmigiano. Our model learns genome-wide trait-specific functional annotation importance, gene weights, covariate coefficients, and the proportion of burden versus dispersion signals. We apply our model to whole-genome sequencing data from the Alzheimer's disease Sequencing Project.
-
-![parmigiano model](figures/parmigiano%20Model.png)
-
-=======
 # gruyere: Genome-wide Rare Variant EnRichment Evaluation <img src="figures/logo3.png" align="right" height="100"/>
 
 We develop a genome-wide rare variant association test designed for identifying trait-associated loci and functional annotations. This repository accompanies our recent preprint: **Leveraging functional annotations to map rare variants associated with Alzheimer’s disease with gruyere**.
@@ -73,5 +66,4 @@ simulate: False
 python src/gruyere_joint.py example_data/inputs.yaml
 python src/gruyere_pergene.py example_data/inputs.yaml $CHR # For each chromosome
 ```
->>>>>>> 3b64698c751033ced518527e22663b311a1c4f33
 
