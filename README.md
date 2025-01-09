@@ -1,3 +1,4 @@
+
 # gruyere: Genome-wide Rare Variant EnRichment Evaluation <img src="figures/logo3.png" align="right" height="100"/>
 
 We develop a genome-wide rare variant association test designed for identifying trait-associated loci and functional annotations. This repository accompanies our recent preprint: **Leveraging functional annotations to map rare variants associated with Alzheimer’s disease with gruyere**.
