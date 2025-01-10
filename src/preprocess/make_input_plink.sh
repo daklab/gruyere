@@ -2,16 +2,14 @@
 
 #SBATCH -N 1 # Ensure that all cores are on one machine
 #SBATCH -p pe2,bigmem,dev
-#SBATCH --mem=200G
-#SBATCH -t 0-10:00 # Runtime in D-HH:MM
-#SBATCH -J map_annotations # <-- name of job
+#SBATCH --mem=50G
+#SBATCH -t 0-4:00 # Runtime in D-HH:MM
+#SBATCH -J genotype_plink # <-- name of job
+#SBATCH --mail-type=FAIL                 # Mail events (NONE, BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=adas@nygenome.org        # Where to send mail
 #SBATCH --array=1-44 # <-- number of jobs to run
 #SBATCH --output=bash_outputs/stdout_%j.log # Standard output and error log
 #SBATCH --error=bash_outputs/error_%j.log
-
-module load cuda/10.0
-source /gpfs/commons/home/adas/miniconda3/bin/activate
-conda activate rv_ad
 
 task_id=$SLURM_ARRAY_TASK_ID
 if (( task_id <= 22 )); then
@@ -25,6 +23,8 @@ fi
 echo "Chromosome: $chr"
 echo "Variant Type: $variant_type"
 
-python map_annotations.py $variant_type $chr
+module load cuda/10.0
+source /gpfs/commons/home/adas/miniconda3/bin/activate
+conda activate pyro
 
-
+python make_input_plink.py $variant_type $chr

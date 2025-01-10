@@ -20,10 +20,25 @@ Input data:
     
 Preprocessing scripts and steps:
 
-1) Extract genotypes of interest: `/gpfs/commons/home/adas/gruyere/src/preprocess/extract_genotypes.sh`.
-    - This script extracts genotypes for unrelated individuals. 
-    - We select coding and non-coding variants of interest that pass QC (genotyping rate > 90%, individual missingness > 90%). 
-    - Genotypes are saved `/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/genotypes/{coding/noncoding}/ADSP.chr{CHR}.vcf`
-2) Map variants to functional annotations: 
-    - Mapping VEP/missense annotations: Run `/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/VEP/ensembl-vep/VEP_full.sh`
+1) Map variants to functional annotations: 
     - Mapping WGSA annotations: Run `/gpfs/commons/home/adas/gruyere/src/preprocess/map_annotations.sh`
+
+2) Extract genotypes of interest:
+    - First create input files for PLINK: Run `/gpfs/commons/home/adas/gruyere/src/preprocess/make_input_plink.sh`
+    - Then extract genotypes for unrelated individuals: `/gpfs/commons/home/adas/gruyere/src/preprocess/extract_genotypes.sh`
+    - We select coding and non-coding variants of interest that pass QC (genotyping rate > 90%, individual missingness > 90%). 
+        - Genotypes are saved `/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/genotypes/{coding/noncoding}/ADSP.chr{CHR}.vcf`
+        - Compress genotypes `/gpfs/commons/home/adas/gruyere/src/preprocess/vcf_comp.sh`
+
+3) Efficiently get VEP and missense annotations:
+    - Run `/gpfs/commons/groups/knowles_lab/data/ADSP_reguloML/Alzheimer-RV/data/VEP/ensembl-vep/VEP_full.sh`
+    
+4) Calculate LD matrices with GWAS significant loci if conditional analysis
+    - Run `/gpfs/commons/home/adas/gruyere/src/preprocess/LD_gwas.sh`
+    
+4) Generate per-gene tensors:
+    - Selecting only variants that are present both in genotype and annotation datasets (steps 1 & 2), generate efficient tensors for loading
+    - Genotype tensors: per chromosome individual by genotype (separate for coding, non-coding)
+    - Annotation tensors: per chromosome variant by annotation (separate for coding, non-coding)
+    - Variant-Gene index tensors: per chromosome variant-gene index mapping (separate for coding, non-coding & includes ABC annotations for non-coding)
+    - Run `/gpfs/commons/home/adas/gruyere/src/preprocess/gene_tensors.sh`
